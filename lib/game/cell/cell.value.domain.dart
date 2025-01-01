@@ -1,8 +1,10 @@
+import 'package:dice_game/game/color/color.domain.dart';
 import 'package:flutter/material.dart';
 
 enum CellColor {
   red(Colors.red, 'rood'),
   yellow(
+
       /// See [Colors.yellow.shade700]
       Color(0xFFFBC02D),
       'geel'),
@@ -16,14 +18,6 @@ enum CellColor {
   Color get middle => lightenColor(dark, 0.15);
 
   Color get light => lightenColor(dark, 0.4);
-}
-
-Color lightenColor(Color color, [double amount = 0.1]) {
-  assert(amount >= 0 && amount <= 1, 'The amount should be between 0 and 1.');
-  final hsl = HSLColor.fromColor(color);
-  final lighterHSL =
-      hsl.withLightness((hsl.lightness + amount).clamp(0.0, 1.0));
-  return lighterHSL.toColor();
 }
 
 enum CellValue {

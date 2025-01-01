@@ -1,7 +1,7 @@
 import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
 
-class GameService extends  ChangeNotifier{
+class GameService extends ChangeNotifier {
   static final GameService _singleton = GameService._internal();
 
   factory GameService() => _singleton;

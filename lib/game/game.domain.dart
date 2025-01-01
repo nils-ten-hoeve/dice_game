@@ -4,6 +4,7 @@
 import 'package:collection/collection.dart';
 import 'package:dice_game/game/cell/cell.value.domain.dart';
 import 'package:dice_game/game/change/change_stack.domain.dart';
+import 'package:dice_game/game/dice/dice.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:undo/undo.dart';
 
@@ -403,8 +404,26 @@ class Game extends ChangeNotifier {
   late GameChangeStack changes = GameChangeStack(this);
 
   /// This is a message to be displayed to the user.
-  /// It is cleared when it is read
+  /// It is null when it is read or when there are no messages
   String? dutchMessage;
+
+  late final Set<CellColor> colors = variant.rows
+      .expand((row) => row.values)
+      .map((cellValue) => cellValue.color)
+      .toSet();
+
+  bool _showDice = false;
+
+  late final Dice dice = Dice(this);
+
+  bool get showDice => _showDice;
+  set showDice(bool visible) {
+    _showDice = visible;
+    if (visible) {
+      dice.roll();
+    }
+    notifyListeners();
+  }
 
   void markOrUnMarkCell(CellValue cellValue) {
     changes.add(MarkCell(this, cellValue));
@@ -428,6 +447,9 @@ class Game extends ChangeNotifier {
 
   bool canLock(CellColor color) =>
       markedCount(color) >= variant.markedCellsToLock;
+
+  bool isClosed(CellColor color) =>
+      rowStates[rowLockColors.indexOf(color)] != RowState.none;
 }
 
 enum CellState {
