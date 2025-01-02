@@ -1,0 +1,17 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "dart",
+			"command": "dart",
+			"cwd": "",
+			"args": [
+				"run",
+				"flutter_launcher_icons"
+			],
+			"problemMatcher": [],
+			"label": "dart: run flutter_launcher_icons",
+			"detail": ""
+		}
+	]
+}
