@@ -62,7 +62,7 @@ class PenaltyButton extends MyIconButton {
 }
 
 Color buttonSurfaceColor(BuildContext context, bool selected) => selected
-    ? lightenColor(Theme.of(context).colorScheme.onSurface, 0.5)
+    ? Theme.of(context).colorScheme.outline
     : Theme.of(context).colorScheme.surface;
 
 class UnDoReDoRestartButton extends MyIconButton {

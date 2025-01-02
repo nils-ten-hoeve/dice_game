@@ -42,9 +42,13 @@ class DieWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var iconData = die.isWhite ? die.face.outlineIcon : die.face.filledIcon;
-    var iconColor =
-        die.isWhite ? Theme.of(context).colorScheme.onSurface : die.color;
+    var lightBackground = Theme.of(context).brightness == Brightness.light;
+    var iconData = lightBackground && die.isWhite
+        ? die.face.outlineIcon
+        : die.face.filledIcon;
+    var iconColor = lightBackground && die.isWhite
+        ? Theme.of(context).colorScheme.onSurface
+        : die.color;
     return InkWell(
       onTap: () => GameService().currentGame.dice.roll(),
       child: FittedBox(
