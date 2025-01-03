@@ -19,11 +19,11 @@
 			"args": [
 				"build",
 				"apk",
-				"--split-per-abi"
+				//"--split-per-abi"
 			],
 			"group": "build",
 			"problemMatcher": [],
-			"label": "flutter: flutter build apk --split-per-abi",
+			"label": "flutter: flutter build apk",
 			"detail": ""
 		}
 	]
