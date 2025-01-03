@@ -12,6 +12,19 @@
 			"problemMatcher": [],
 			"label": "dart: run flutter_launcher_icons",
 			"detail": ""
+		},
+		{
+			"type": "flutter",
+			"command": "flutter",
+			"args": [
+				"build",
+				"apk",
+				"--split-per-abi"
+			],
+			"group": "build",
+			"problemMatcher": [],
+			"label": "flutter: flutter build apk --split-per-abi",
+			"detail": ""
 		}
 	]
 }
