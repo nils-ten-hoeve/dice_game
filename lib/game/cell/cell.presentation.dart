@@ -1,5 +1,6 @@
 import 'package:dice_game/game/cell/cell.value.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
+import 'package:dice_game/game/variant/variant.domain.dart';
 import 'package:flutter/material.dart';
 
 class GameRow extends StatelessWidget {
@@ -19,20 +20,20 @@ class GameRow extends StatelessWidget {
         width: constraints.maxWidth,
         child: Row(
           children: [
-            for (var value in cellRow.values)
+            for (var cell in cellRow)
               GameRowCell(
                 size: cellSize,
-                color: value.color.dark,
-                child: CellNumberAndState(
-                  cellValue: value,
+                color: cell.color.dark,
+                child: CellWidget(
+                  cell: cell,
                   game: game,
                 ),
               ),
             GameRowCell(
                 size: cellSize,
-                color: cellRow.values.last.color.dark,
+                color: cellRow.last.color.dark,
                 child: LockAndState(
-                  cellRow.values.last,
+                  cellRow.last,
                   game: game,
                 )),
           ],
@@ -68,13 +69,13 @@ class GameRowCell extends StatelessWidget {
       child: Center(child: child));
 }
 
-class CellNumberAndState extends StatelessWidget {
-  final CellValue cellValue;
+class CellWidget extends StatelessWidget {
+  final Cell cell;
   final Game? game;
 
-  const CellNumberAndState({
+  const CellWidget({
     super.key,
-    required this.cellValue,
+    required this.cell,
     this.game,
   });
 
@@ -87,19 +88,19 @@ class CellNumberAndState extends StatelessWidget {
         width: cellSize,
         height: cellSize,
         decoration: BoxDecoration(
-            color: game != null && game!.cellStates[cellValue] != CellState.none
-                ? cellValue.color.middle
-                : cellValue.color.light,
+            color: game != null && game!.cellStates[cell] != CellState.none
+                ? cell.color.middle
+                : cell.color.light,
             borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         child: Stack(children: [
-          CellNumberWidget(cellValue),
-          if (game != null) CellStateWidget(game!.cellStates[cellValue]!),
+          CellNumberWidget(cell),
+          if (game != null) CellStateWidget(game!.cellStates[cell]!),
         ]),
       );
       if (game != null) {
         return InkWell(
           onTap: () {
-            game!.markOrUnMarkCell(cellValue);
+            game!.markOrUnMarkCell(cell);
           },
           child: widget,
         );
@@ -111,10 +112,10 @@ class CellNumberAndState extends StatelessWidget {
 }
 
 class CellNumberWidget extends StatelessWidget {
-  final CellValue value;
+  final Cell cell;
 
   const CellNumberWidget(
-    this.value, {
+    this.cell, {
     super.key,
   });
 
@@ -124,9 +125,9 @@ class CellNumberWidget extends StatelessWidget {
           scale: 0.8,
           child: FittedBox(
             fit: BoxFit.contain,
-            child: Text(value.number.toString(),
+            child: Text(cell.number.toString(),
                 style: TextStyle(
-                  color: value.color.dark,
+                  color: cell.color.dark,
                   fontWeight: FontWeight.w600,
                 )),
           ),
@@ -157,16 +158,16 @@ class CellStateWidget extends StatelessWidget {
 }
 
 class LockAndState extends StatelessWidget {
-  final CellValue lastCellValue;
+  final Cell lastCell;
   final Game? game;
-  const LockAndState(this.lastCellValue, {super.key, this.game});
+  const LockAndState(this.lastCell, {super.key, this.game});
 
   @override
   Widget build(BuildContext context) =>
       LayoutBuilder(builder: (context, constraints) {
         var fieldSize = constraints.maxWidth * 0.75;
 
-        var cellColor = lastCellValue.color;
+        var cellColor = lastCell.color;
         var surfaceColor = game != null && rowState(game!) != RowState.none
             ? cellColor.middle
             : cellColor.light;
@@ -195,7 +196,7 @@ class LockAndState extends StatelessWidget {
 
   RowState rowState(Game game) => game.rowStates[rowIndex(game)];
 
-  int rowIndex(Game game) => game.variant.findRowIndex(lastCellValue);
+  int rowIndex(Game game) => game.variant.findRowIndex(lastCell);
 }
 
 class LockWidget extends StatelessWidget {

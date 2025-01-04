@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:dice_game/game/color/color.domain.dart';
 import 'package:flutter/material.dart';
 
@@ -20,57 +21,54 @@ enum CellColor {
   Color get light => lightenColor(dark, 0.4);
 }
 
-enum CellValue {
-  red2(CellColor.red, 2),
-  red3(CellColor.red, 3),
-  red4(CellColor.red, 4),
-  red5(CellColor.red, 5),
-  red6(CellColor.red, 6),
-  red7(CellColor.red, 7),
-  red8(CellColor.red, 8),
-  red9(CellColor.red, 9),
-  red10(CellColor.red, 10),
-  red11(CellColor.red, 11),
-  red12(CellColor.red, 12),
+enum CellVariant {
+  /// [normal] is used in:
+  /// * [BasicVariantA]
+  /// * [BasicVariantB]
+  /// * [MixedVariantA]
+  /// * [MixedVariantB]
+  normal,
 
-  yellow2(CellColor.yellow, 2),
-  yellow3(CellColor.yellow, 3),
-  yellow4(CellColor.yellow, 4),
-  yellow5(CellColor.yellow, 5),
-  yellow6(CellColor.yellow, 6),
-  yellow7(CellColor.yellow, 7),
-  yellow8(CellColor.yellow, 8),
-  yellow9(CellColor.yellow, 9),
-  yellow10(CellColor.yellow, 10),
-  yellow11(CellColor.yellow, 11),
-  yellow12(CellColor.yellow, 12),
+  /// See:
+  /// * [ConnectedVariantA]
+  /// * https://www.qwixx.nl/varianten/qwixx-connected/
+  /// * https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCWEkfvZGisW9eFdRp7zxANZdbeg-J1fkk-A&s
+  stairs,
 
-  green2(CellColor.green, 2),
-  green3(CellColor.green, 3),
-  green4(CellColor.green, 4),
-  green5(CellColor.green, 5),
-  green6(CellColor.green, 6),
-  green7(CellColor.green, 7),
-  green8(CellColor.green, 8),
-  green9(CellColor.green, 9),
-  green10(CellColor.green, 10),
-  green11(CellColor.green, 11),
-  green12(CellColor.green, 12),
+  /// See:
+  /// * [ConnectedVariantB]
+  /// * https://www.qwixx.nl/varianten/qwixx-connected/
+  /// * https://freundderwuerfel.weebly.com/uploads/1/3/0/8/130835601/published/qwixx-connected.jpg?1590921087
+  linkedWithCellBelow,
+}
 
-  blue2(CellColor.blue, 2),
-  blue3(CellColor.blue, 3),
-  blue4(CellColor.blue, 4),
-  blue5(CellColor.blue, 5),
-  blue6(CellColor.blue, 6),
-  blue7(CellColor.blue, 7),
-  blue8(CellColor.blue, 8),
-  blue9(CellColor.blue, 9),
-  blue10(CellColor.blue, 10),
-  blue11(CellColor.blue, 11),
-  blue12(CellColor.blue, 12),
-  ;
-
+class Cell {
   final CellColor color;
   final int number;
-  const CellValue(this.color, this.number);
+  final CellVariant variant;
+
+  Cell(this.color, this.number, [this.variant = CellVariant.normal]) {
+    validateNumber();
+  }
+
+  void validateNumber() {
+    if (number < 2) {
+      throw Exception("Number must be at least 2");
+    }
+    if (number > 12) {
+      throw Exception("Number must be at most 12");
+    }
+  }
+}
+
+class CellRow extends DelegatingList<Cell> {
+  CellRow(super.values) {
+    validateNumberOfCells();
+  }
+
+  void validateNumberOfCells() {
+    if (length != 11) {
+      throw Exception("Row must have 11 cells");
+    }
+  }
 }

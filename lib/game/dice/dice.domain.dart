@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dice_game/game/cell/cell.value.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
 import 'package:bootstrap_icons/bootstrap_icons.dart';
@@ -59,7 +60,7 @@ class Dice extends ChangeNotifier {
   List<Die> _createNewDice() => [
         Die.white(DieFace.random()),
         Die.white(DieFace.random()),
-        for (var color in game.colors)
+        for (var color in CellColor.values)
           if (!game.isClosed(color)) Die(color.dark, DieFace.random()),
       ];
 }
