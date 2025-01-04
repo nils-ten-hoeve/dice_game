@@ -150,7 +150,9 @@ class CellStateWidget extends StatelessWidget {
                 fit: BoxFit.contain,
                 child: Text(state.text,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
+                      color: Theme.of(context).brightness == Brightness.dark
+                          ? Colors.black
+                          : Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w600,
                     )))),
       );
