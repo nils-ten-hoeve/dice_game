@@ -37,7 +37,7 @@ class _GameWidgetState extends State<GameWidget> {
                 }
                 if (game.dutchMessage != null) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
-                    showMessageDialog(context);
+                    showMessageDialog(context, game.dutchMessage!);
                   });
                 }
                 return Column(

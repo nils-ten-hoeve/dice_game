@@ -255,9 +255,16 @@ class PurpleScore extends SubScoreCalculation {
     var markedCells =
         cellStates.where((entry) => entry.value == CellState.marked).toList();
     var count = markedCells.length;
-    var points = ScoreConversion().countToPoints(count);
-    return SubScoreResult(count: count, points: points, color: Colors.purple);
+    var points = scoreConversion.countToPoints(count);
+    var dutchMessage = '$count keer paars is $points punten.\n$scoreConversion';
+    return SubScoreResult(
+      points: points,
+      dutchMessage: dutchMessage,
+      color: Colors.purple,
+    );
   }
+
+  final ScoreConversion scoreConversion = ScoreConversion();
 }
 
 class ConnectedVariantA extends GameVariant {

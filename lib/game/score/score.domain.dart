@@ -3,12 +3,14 @@ import 'package:dice_game/game/cell/cell.value.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
 
-class SubScoreResult {
-  final int count;
+class SubScoreResult implements WithDutchMessage {
   final int points;
   final Color? color;
+  @override
+  final String dutchMessage;
 
-  SubScoreResult({required this.count, required this.points, this.color});
+  SubScoreResult(
+      {required this.points, required this.dutchMessage, this.color});
 }
 
 abstract class SubScoreCalculation {
@@ -16,6 +18,7 @@ abstract class SubScoreCalculation {
 }
 
 class ColorScore extends SubScoreCalculation {
+  final ScoreConversion scoreConversion = ScoreConversion();
   final CellColor color;
   ColorScore(this.color);
 
@@ -29,8 +32,11 @@ class ColorScore extends SubScoreCalculation {
     var markedCells =
         cellStates.where((entry) => entry.value == CellState.marked).toList();
     var count = markedCells.length;
-    var points = ScoreConversion().countToPoints(count);
-    return SubScoreResult(count: count, points: points, color: color.dark);
+    var points = scoreConversion.countToPoints(count);
+    var dutchMessage =
+        '$count keer ${color.dutchName} is $points punten.\n$scoreConversion';
+    return SubScoreResult(
+        points: points, dutchMessage: dutchMessage, color: color.dark);
   }
 }
 
@@ -39,7 +45,9 @@ class PenaltyScore extends SubScoreCalculation {
   SubScoreResult calculateScore(Game game) {
     var count = game.penalty.count;
     var points = count * -5;
-    return SubScoreResult(count: count, points: points);
+    var dutchMessage =
+        '${count == 1 ? '1 misworp' : '$count misworpen'} is $points punten.';
+    return SubScoreResult(points: points, dutchMessage: dutchMessage);
   }
 }
 
@@ -89,4 +97,11 @@ class ScoreConversion extends DelegatingMap<int, int> {
         });
 
   int countToPoints(int count) => this[count]!;
+
+  @override
+  String toString() => entries
+      .where((entry) => entry.value != 0)
+      .map((entry) =>
+          '${entry.key} keer = ${entry.value == 1 ? '1 punt' : '${entry.value} punten'}')
+      .join('\n');
 }

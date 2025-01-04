@@ -73,12 +73,12 @@ class UnDoReDoRestartButton extends MyIconButton {
         );
 }
 
-void showMessageDialog(BuildContext context) {
+void showMessageDialog(BuildContext context, String dutchMessage) {
   var game = GameService().currentGame;
   showDialog(
       context: context,
       builder: (context) => AlertDialog(
-            content: SingleChildScrollView(child: Text(game.dutchMessage!)),
+            content: SingleChildScrollView(child: Text(dutchMessage)),
             actions: [
               ElevatedButton.icon(
                 label: Text('Ga verder'),

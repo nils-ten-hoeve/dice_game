@@ -1,3 +1,4 @@
+import 'package:dice_game/game/action_bar/action_bar.presentation.dart';
 import 'package:dice_game/game/game.service.dart';
 import 'package:flutter/material.dart';
 
@@ -18,9 +19,14 @@ class ScoreWidget extends StatelessWidget {
             style: _textStyle(onSurface)));
       }
       //
-      children.add(Text(
-        subScore.points.abs().toString(),
-        style: _textStyle(subScore.color ?? onSurface),
+      children.add(InkWell(
+        onTap: () {
+          showMessageDialog(context, subScore.dutchMessage);
+        },
+        child: Text(
+          subScore.points.abs().toString(),
+          style: _textStyle(subScore.color ?? onSurface),
+        ),
       ));
     }
     children.add(Text('=', style: _textStyle(onSurface)));
