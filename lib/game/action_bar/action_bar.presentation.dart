@@ -1,5 +1,5 @@
 import 'package:dice_game/game/cell/cell.presentation.dart';
-import 'package:dice_game/game/cell/cell.value.domain.dart';
+import 'package:dice_game/game/score/score.presentation.dart';
 import 'package:dice_game/game/variant/variant.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:dice_game/game/game.service.dart';
@@ -212,62 +212,6 @@ class _MyIconButtonState extends State<MyIconButton> {
               iconSize: constraints.maxWidth * 0.4,
             ),
           ));
-}
-
-class ScoreWidget extends StatelessWidget {
-  const ScoreWidget({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var onSurface = Theme.of(context).colorScheme.onSurface;
-    var game = GameService().currentGame;
-    return Transform.scale(
-      scale: 0.9,
-      child: FittedBox(
-        fit: BoxFit.contain,
-        child: Row(children: [
-          //TODO ScoreTextWidget with Inkwell to show calculation
-          Text(game.redScore.toString(), style: _textStyle(CellColor.red.dark)),
-          Text('+', style: _textStyle(onSurface)),
-          Text(game.yellowScore.toString(),
-              style: _textStyle(CellColor.yellow.dark)),
-          Text('+', style: _textStyle(onSurface)),
-          Text(game.greenScore.toString(),
-              style: _textStyle(CellColor.green.dark)),
-          Text('+', style: _textStyle(onSurface)),
-          Text(game.blueScore.toString(),
-              style: _textStyle(CellColor.blue.dark)),
-          Text('-', style: _textStyle(onSurface)),
-          Text(game.penaltyScore.abs().toString(),
-              style: _textStyle(onSurface)),
-          Text('=', style: _textStyle(onSurface)),
-          Text(game.totalScore.toString(), style: _textStyle(onSurface)),
-        ]),
-      ),
-    );
-  }
-
-  TextStyle _textStyle(Color color) => TextStyle(
-        color: color,
-        fontWeight: FontWeight.w600,
-      );
-}
-
-class ScoreTextWidget extends StatelessWidget {
-  final String text;
-  final Color color;
-  const ScoreTextWidget(this.text, this.color, {super.key});
-
-  @override
-  Widget build(BuildContext context) => FittedBox(
-      fit: BoxFit.contain,
-      child: Text(text,
-          style: TextStyle(
-            color: color,
-            fontWeight: FontWeight.w600,
-          )));
 }
 
 void showNewGameDialog(BuildContext context) {

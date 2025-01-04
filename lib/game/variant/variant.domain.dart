@@ -1,8 +1,10 @@
 // ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 
-import 'package:collection/collection.dart';
 import 'package:dice_game/game/cell/cell.value.domain.dart';
+import 'package:dice_game/game/game.domain.dart';
+import 'package:dice_game/game/score/score.domain.dart';
+import 'package:flutter/material.dart';
 
 abstract class GameVariant {
   final String name;
@@ -12,6 +14,7 @@ abstract class GameVariant {
   final CellRow row3;
   final CellRow row4;
   final int markedCellsToLock;
+  final TotalScoreCalculation scoreCalculation;
 
   GameVariant({
     required this.name,
@@ -21,6 +24,7 @@ abstract class GameVariant {
     required this.row3,
     required this.row4,
     required this.markedCellsToLock,
+    required this.scoreCalculation,
   }) {
     validateIfAllUnique();
   }
@@ -72,6 +76,10 @@ class BasicVariantA extends GameVariant {
             for (var number in twoTroughTwelve) Cell(CellColor.blue, number),
           ]),
           markedCellsToLock: 5,
+          scoreCalculation: TotalScoreCalculation([
+            for (var color in CellColor.values) ColorScore(color),
+            PenaltyScore()
+          ]),
         );
 }
 
@@ -93,6 +101,10 @@ class BasicVariantB extends GameVariant {
             for (var number in twelveTroughTwo) Cell(CellColor.blue, number),
           ]),
           markedCellsToLock: 5,
+          scoreCalculation: TotalScoreCalculation([
+            for (var color in CellColor.values) ColorScore(color),
+            PenaltyScore()
+          ]),
         );
 }
 
@@ -155,6 +167,10 @@ class MixedVariantA extends GameVariant {
             Cell(CellColor.blue, 2)
           ]),
           markedCellsToLock: 6, //Note: this is different from others, see rules
+          scoreCalculation: TotalScoreCalculation([
+            for (var color in CellColor.values) ColorScore(color),
+            PenaltyScore()
+          ]),
         );
 }
 
@@ -220,7 +236,28 @@ class MixedVariantB extends GameVariant {
             )
           ]),
           markedCellsToLock: 5,
+          scoreCalculation: TotalScoreCalculation([
+            for (var color in CellColor.values) ColorScore(color),
+            PenaltyScore()
+          ]),
         );
+}
+
+class PurpleScore extends SubScoreCalculation {
+  @override
+  SubScoreResult calculateScore(Game game) {
+    var allCells = game.variant.rows.expand((row) => row);
+    var cellsOfColor =
+        allCells.where((cell) => cell.variant == CellVariant.stairs).toList();
+    var cellStates = game.cellStates.entries
+        .where((entry) => cellsOfColor.contains(entry.key))
+        .toList();
+    var markedCells =
+        cellStates.where((entry) => entry.value == CellState.marked).toList();
+    var count = markedCells.length;
+    var points = ScoreConversion().countToPoints(count);
+    return SubScoreResult(count: count, points: points, color: Colors.purple);
+  }
 }
 
 class ConnectedVariantA extends GameVariant {
@@ -282,6 +319,11 @@ class ConnectedVariantA extends GameVariant {
             Cell(CellColor.blue, 2)
           ]),
           markedCellsToLock: 5,
+          scoreCalculation: TotalScoreCalculation([
+            for (var color in CellColor.values) ColorScore(color),
+            PurpleScore(),
+            PenaltyScore()
+          ]),
         );
 }
 
@@ -344,6 +386,10 @@ class ConnectedVariantB extends GameVariant {
             Cell(CellColor.blue, 2)
           ]),
           markedCellsToLock: 5,
+          scoreCalculation: TotalScoreCalculation([
+            for (var color in CellColor.values) ColorScore(color),
+            PenaltyScore()
+          ]),
         );
 }
 

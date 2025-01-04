@@ -32,8 +32,6 @@ class Game extends ChangeNotifier {
   bool get twoRowsClosed =>
       rowStates.whereNot((RowState e) => e == RowState.none).length >= 2;
 
-  final scoresConversion = ScoreConversion();
-
   int markedCount(CellColor cellColor) =>
       _markedCellCount(cellColor) + _markedLockCount(cellColor);
 
@@ -47,20 +45,7 @@ class Game extends ChangeNotifier {
     return rowStates[rowLockIndex] == RowState.lockedByMe ? 1 : 0;
   }
 
-  int get redScore => scoresConversion.of(markedCount(CellColor.red));
-
-  int get yellowScore => scoresConversion.of(markedCount(CellColor.yellow));
-
-  int get greenScore => scoresConversion.of(markedCount(CellColor.green));
-
-  int get blueScore => scoresConversion.of(markedCount(CellColor.blue));
-
-  int get penaltyScore => penalty.count * -5;
-
   Panalty penalty = Panalty.none;
-
-  int get totalScore =>
-      redScore + yellowScore + greenScore + blueScore + penaltyScore;
 
   late GameChangeStack changes = GameChangeStack(this);
 
@@ -265,25 +250,4 @@ enum Panalty {
   const Panalty(this.count);
 
   bool get isMax => count == 4;
-}
-
-class ScoreConversion extends DelegatingMap<int, int> {
-  ScoreConversion()
-      : super({
-          0: 0,
-          1: 1,
-          2: 3,
-          3: 6,
-          4: 10,
-          5: 15,
-          6: 21,
-          7: 28,
-          8: 36,
-          9: 45,
-          10: 55,
-          11: 66,
-          12: 78
-        });
-
-  int of(int count) => this[count]!;
 }

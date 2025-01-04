@@ -1,6 +1,5 @@
 import 'package:dice_game/game/cell/cell.value.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
-import 'package:dice_game/game/variant/variant.domain.dart';
 import 'package:flutter/material.dart';
 
 class GameRow extends StatelessWidget {

@@ -1,4 +1,4 @@
-import 'package:dice_game/game/action_bar/score_bar.presentation.dart';
+import 'package:dice_game/game/action_bar/action_bar.presentation.dart';
 import 'package:dice_game/game/cell/cell.presentation.dart';
 import 'package:dice_game/game/dice/dice.presentation.dart';
 import 'package:dice_game/game/game.service.dart';
@@ -18,7 +18,7 @@ class _GameWidgetState extends State<GameWidget> {
   Widget build(BuildContext context) => Align(
         alignment: Alignment.center,
         child: AspectRatio(
-          aspectRatio: 5 / 3,
+          aspectRatio: 15 / 8,
           child: ListenableBuilder(
             listenable: gameService,
             builder: (context, child) {
