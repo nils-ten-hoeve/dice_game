@@ -18,6 +18,7 @@ class _GameWidgetState extends State<GameWidget> {
   @override
   Widget build(BuildContext context) {
     hideSystemBar();
+    setPreferedOriantations();
     return Align(
       alignment: Alignment.center,
       child: AspectRatio(
@@ -64,5 +65,12 @@ class _GameWidgetState extends State<GameWidget> {
 
   void hideSystemBar() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+  }
+
+  void setPreferedOriantations() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
   }
 }
