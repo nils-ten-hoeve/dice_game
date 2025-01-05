@@ -59,6 +59,9 @@ class Cell {
       throw Exception("Number must be at most 12");
     }
   }
+
+  Cell copyWith({CellColor? color, int? number, CellVariant? variant}) =>
+      Cell(color ?? this.color, number ?? this.number, variant ?? this.variant);
 }
 
 class CellRow extends DelegatingList<Cell> {

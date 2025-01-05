@@ -2,7 +2,7 @@
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 
 import 'package:collection/collection.dart';
-import 'package:dice_game/game/cell/cell.value.domain.dart';
+import 'package:dice_game/game/cell/cell.domain.dart';
 import 'package:dice_game/game/change/change_stack.domain.dart';
 import 'package:dice_game/game/dice/dice.domain.dart';
 import 'package:dice_game/game/variant/variant.domain.dart';

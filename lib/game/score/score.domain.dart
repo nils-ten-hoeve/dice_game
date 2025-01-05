@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:dice_game/game/cell/cell.value.domain.dart';
+import 'package:dice_game/game/cell/cell.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
 

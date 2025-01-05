@@ -1,4 +1,4 @@
-import 'package:dice_game/game/cell/cell.value.domain.dart';
+import 'package:dice_game/game/cell/cell.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
 
@@ -93,6 +93,7 @@ class CellWidget extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         child: Stack(children: [
           CellNumberWidget(cell),
+          CellVariantWidget(cell.variant),
           if (game != null) CellStateWidget(game!.cellStates[cell]!),
         ]),
       );
@@ -132,6 +133,34 @@ class CellNumberWidget extends StatelessWidget {
           ),
         ),
       );
+}
+
+class CellVariantWidget extends StatelessWidget {
+  final CellVariant variant;
+
+  const CellVariantWidget(
+    this.variant, {
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    switch (variant) {
+      case CellVariant.stairs:
+        return Positioned.fill(
+            child: Transform.scale(
+                scale: 0.9,
+                child: Container(
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                          color: Colors.purple,
+                          width: MediaQuery.of(context).size.width * 0.005)),
+                )));
+      default:
+        return SizedBox();
+    }
+  }
 }
 
 class CellStateWidget extends StatelessWidget {

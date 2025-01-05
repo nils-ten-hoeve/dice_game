@@ -1,7 +1,9 @@
 // ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 
-import 'package:dice_game/game/cell/cell.value.domain.dart';
+import 'dart:math';
+
+import 'package:dice_game/game/cell/cell.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:dice_game/game/score/score.domain.dart';
 import 'package:flutter/material.dart';
@@ -268,70 +270,74 @@ class PurpleScore extends SubScoreCalculation {
 }
 
 class ConnectedVariantA extends GameVariant {
-  ConnectedVariantA()
-      : super(
-          name: "Connected Variant A (Treden)",
-          explenationUrl:
-              Uri.parse("https://www.qwixx.nl/varianten/qwixx-connected/"),
-          row1: CellRow([
-            Cell(CellColor.red, 2),
-            Cell(CellColor.red, 3),
-            Cell(CellColor.red, 4),
-            Cell(CellColor.red, 5),
-            Cell(CellColor.red, 6),
-            Cell(CellColor.red, 7),
-            Cell(CellColor.red, 8),
-            Cell(CellColor.red, 9),
-            Cell(CellColor.red, 10),
-            Cell(CellColor.red, 11),
-            Cell(CellColor.red, 12),
-          ]),
-          row2: CellRow([
-            Cell(CellColor.yellow, 2),
-            Cell(CellColor.yellow, 3),
-            Cell(CellColor.yellow, 4),
-            Cell(CellColor.yellow, 5),
-            Cell(CellColor.yellow, 6),
-            Cell(CellColor.yellow, 7),
-            Cell(CellColor.yellow, 8),
-            Cell(CellColor.yellow, 9),
-            Cell(CellColor.yellow, 10),
-            Cell(CellColor.yellow, 11),
-            Cell(CellColor.yellow, 12),
-          ]),
-          row3: CellRow([
-            Cell(CellColor.green, 12),
-            Cell(CellColor.green, 11),
-            Cell(CellColor.green, 10),
-            Cell(CellColor.green, 9),
-            Cell(CellColor.green, 8),
-            Cell(CellColor.green, 7),
-            Cell(CellColor.green, 6),
-            Cell(CellColor.green, 5),
-            Cell(CellColor.green, 4),
-            Cell(CellColor.green, 3),
-            Cell(CellColor.green, 2),
-          ]),
-          row4: CellRow([
-            Cell(CellColor.blue, 12),
-            Cell(CellColor.blue, 11),
-            Cell(CellColor.blue, 10),
-            Cell(CellColor.blue, 9),
-            Cell(CellColor.blue, 8),
-            Cell(CellColor.blue, 7),
-            Cell(CellColor.blue, 6),
-            Cell(CellColor.blue, 5),
-            Cell(CellColor.blue, 4),
-            Cell(CellColor.blue, 3),
-            Cell(CellColor.blue, 2)
-          ]),
-          markedCellsToLock: 5,
-          scoreCalculation: TotalScoreCalculation([
-            for (var color in CellColor.values) ColorScore(color),
-            PurpleScore(),
-            PenaltyScore()
-          ]),
-        );
+  ConnectedVariantA._internal({
+    required super.name,
+    required super.explenationUrl,
+    required super.row1,
+    required super.row2,
+    required super.row3,
+    required super.row4,
+    required super.markedCellsToLock,
+    required super.scoreCalculation,
+  });
+
+  factory ConnectedVariantA() {
+    var baseRows = BasicVariantA().rows;
+    Map<(int rowNr, int columnNr), Cell> cells = {};
+    var columnLength = baseRows.first.length;
+    for (var rowNr = 0; rowNr < baseRows.length; rowNr++) {
+      for (var columnNr = 0; columnNr < columnLength; columnNr++) {
+        cells[(rowNr, columnNr)] = baseRows[rowNr][columnNr];
+      }
+    }
+    var random = Random();
+    var firstRowNr = 0;
+    var lastRowNr = baseRows.length - 1;
+    var rowNr = random.nextInt(baseRows.length);
+    var goingUp = rowNr == lastRowNr
+        ? true
+        : rowNr == firstRowNr
+            ? false
+            : random.nextBool();
+    for (var columnNr = 0; columnNr < columnLength; columnNr++) {
+      cells[(rowNr, columnNr)] =
+          cells[(rowNr, columnNr)]!.copyWith(variant: CellVariant.stairs);
+      rowNr = goingUp ? rowNr - 1 : rowNr + 1;
+      goingUp = rowNr == lastRowNr
+          ? true
+          : rowNr == firstRowNr
+              ? false
+              : goingUp;
+    }
+
+    return ConnectedVariantA._internal(
+      name: "Connected Variant A (Treden)",
+      explenationUrl:
+          Uri.parse("https://www.qwixx.nl/varianten/qwixx-connected/"),
+      row1: CellRow([
+        for (var columnNr = 0; columnNr < columnLength; columnNr++)
+          cells[(0, columnNr)]!,
+      ]),
+      row2: CellRow([
+        for (var columnNr = 0; columnNr < columnLength; columnNr++)
+          cells[(1, columnNr)]!
+      ]),
+      row3: CellRow([
+        for (var columnNr = 0; columnNr < columnLength; columnNr++)
+          cells[(2, columnNr)]!
+      ]),
+      row4: CellRow([
+        for (var columnNr = 0; columnNr < columnLength; columnNr++)
+          cells[(3, columnNr)]!
+      ]),
+      markedCellsToLock: 5,
+      scoreCalculation: TotalScoreCalculation([
+        for (var color in CellColor.values) ColorScore(color),
+        PurpleScore(),
+        PenaltyScore()
+      ]),
+    );
+  }
 }
 
 class ConnectedVariantB extends GameVariant {
