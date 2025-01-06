@@ -40,6 +40,7 @@ enum CellVariant {
   /// * https://www.qwixx.nl/varianten/qwixx-connected/
   /// * https://freundderwuerfel.weebly.com/uploads/1/3/0/8/130835601/published/qwixx-connected.jpg?1590921087
   linkedWithCellBelow,
+  linkedWithCellAbove,
 }
 
 class Cell {

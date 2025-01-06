@@ -7,7 +7,6 @@ import 'package:dice_game/game/change/change_stack.domain.dart';
 import 'package:dice_game/game/dice/dice.domain.dart';
 import 'package:dice_game/game/variant/variant.domain.dart';
 import 'package:flutter/material.dart';
-import 'package:undo/undo.dart';
 
 class Game extends ChangeNotifier {
   final GameVariant variant;
@@ -51,7 +50,16 @@ class Game extends ChangeNotifier {
 
   /// This is a message to be displayed to the user.
   /// It is null when it is read or when there are no messages
-  String? dutchMessage;
+  String? _dutchMessage;
+
+  String? get dutchMessage => _dutchMessage;
+
+  set dutchMessage(String? newDutchMessage) {
+    _dutchMessage = newDutchMessage;
+    if (newDutchMessage != null) {
+      notifyListeners();
+    }
+  }
 
   bool _showDice = false;
 
@@ -67,7 +75,10 @@ class Game extends ChangeNotifier {
   }
 
   void markOrUnMarkCell(Cell cell) {
-    changes.add(MarkCell(this, cell));
+    var multipleChanges = variant.createChangesToMarkCell(this, cell);
+    if (multipleChanges.changes.isNotEmpty) {
+      changes.add(multipleChanges);
+    }
   }
 
   void lockRowByOtherPlayer(int rowIndex) {
@@ -87,7 +98,7 @@ class Game extends ChangeNotifier {
   }
 
   bool canLock(CellColor color) =>
-      markedCount(color) >= variant.markedCellsToLock;
+      markedCount(color) >= variant.nrOfMarkedCellsNeededToLock;
 
   bool isClosed(CellColor color) =>
       rowStates[rowLockColors.indexOf(color)] != RowState.none;
@@ -111,131 +122,8 @@ enum RowState {
   const RowState(this.asCellState);
 }
 
-class LockRowByOtherPlayer extends Change<RowState> {
-  LockRowByOtherPlayer(Game game, int rowIndex)
-      : super(
-          game.rowStates[rowIndex],
-          () => _lockRowByOtherPlayer(game, rowIndex),
-          (oldRowState) => _unlockRow(game, rowIndex),
-        );
-
-  static void _lockRowByOtherPlayer(Game game, int rowIndex) {
-    var currentState = game.rowStates[rowIndex];
-    if (currentState == RowState.none) {
-      var row = game.variant.rows[rowIndex];
-      for (var cell in row.reversed) {
-        if (game.cellStates[cell] == CellState.marked) {
-          break;
-        }
-        if (game.cellStates[cell] == CellState.none) {
-          game.cellStates[cell] = CellState.skipped;
-        }
-      }
-      game.rowStates[rowIndex] = RowState.lockedByOtherPlayer;
-    }
-  }
-
-  static void _unlockRow(Game game, int rowIndex) {
-    var currentState = game.rowStates[rowIndex];
-    if (currentState == RowState.lockedByOtherPlayer) {
-      var row = game.variant.rows[rowIndex];
-      for (var cell in row.reversed) {
-        if (game.cellStates[cell] == CellState.marked) {
-          break;
-        }
-        if (game.cellStates[cell] == CellState.skipped) {
-          game.cellStates[cell] = CellState.none;
-        }
-      }
-      game.rowStates[rowIndex] = RowState.none;
-    }
-  }
-}
-
-class AddPenalty extends Change<Panalty> {
-  AddPenalty(Game game)
-      : super(
-          game.penalty,
-          () => _addPenalty(game),
-          (oldValue) => game.penalty = oldValue,
-        );
-
-  static void _addPenalty(Game game) {
-    if (game.penalty.count < 4) {
-      game.penalty = Panalty.values[game.penalty.count + 1];
-    }
-  }
-}
-
 abstract class WithDutchMessage {
   String get dutchMessage;
-}
-
-class MarkCell extends Change<Cell> {
-  MarkCell(Game game, Cell cell)
-      : super(
-          cell,
-          () => _markCell(game, cell),
-          (oldCellValue) => _unMarkCell(game, oldCellValue),
-        );
-
-  static void _markCell(Game game, Cell cell) {
-    var currentState = game.cellStates[cell];
-    if (currentState != CellState.none) {
-      /// cell is marked or skipped: do nothing
-      return;
-    }
-    if (game.variant.isLastCell(cell) && !game.canLock(cell.color)) {
-      game.dutchMessage = "Bij deze variant kun je alleen een kleur sluiten "
-          "wanneer je ${game.variant.markedCellsToLock} of meer "
-          "${cell.color.dutchName} cellen hebt gemarkeert.";
-      return;
-    }
-    var preceidingCells = game.variant.preceidingCells(cell);
-    for (var preceidingCell in preceidingCells) {
-      if (game.cellStates[preceidingCell] == CellState.none) {
-        game.cellStates[preceidingCell] = CellState.skipped;
-      }
-    }
-    game.cellStates[cell] = CellState.marked;
-    if (game.variant.isLastCell(cell) && game.canLock(cell.color)) {
-      lockRow(game, cell);
-      if (!game.finished) {
-        game.dutchMessage = "Gefeliciteerd! Je hebt ${cell.color.dutchName} "
-            "gesloten! Vertel het de overige spelers.";
-      }
-    }
-  }
-
-  static void lockRow(Game game, Cell cell) {
-    var rowIndex = game.variant.findRowIndex(cell);
-    game.rowStates[rowIndex] = RowState.lockedByMe;
-  }
-
-  static void _unMarkCell(Game game, Cell cell) {
-    var preceidingCells = game.variant.preceidingCells(cell);
-    var currentState = game.cellStates[cell];
-    if (currentState == CellState.marked) {
-      for (var preceidingCell in preceidingCells.reversed) {
-        if (game.cellStates[preceidingCell] == CellState.marked) {
-          break;
-        }
-        if (game.cellStates[preceidingCell] == CellState.skipped) {
-          game.cellStates[preceidingCell] = CellState.none;
-        }
-      }
-      game.cellStates[cell] = CellState.none;
-      var rowIndex = game.variant.findRowIndex(cell);
-      if (game.variant.isLastCell(cell) &&
-          game.rowStates[rowIndex] == RowState.lockedByMe) {
-        _unLockRow(game, rowIndex);
-      }
-    }
-  }
-
-  static void _unLockRow(Game game, int rowIndex) {
-    game.rowStates[rowIndex] = RowState.none;
-  }
 }
 
 enum Panalty {

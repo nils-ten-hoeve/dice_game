@@ -147,6 +147,8 @@ class CellVariantWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     switch (variant) {
       case CellVariant.stairs:
+      case CellVariant.linkedWithCellAbove:
+      case CellVariant.linkedWithCellBelow:
         return Positioned.fill(
             child: Transform.scale(
                 scale: 0.9,
