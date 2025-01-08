@@ -45,7 +45,7 @@ class ConnectedVariantA extends GameVariant {
             : random.nextBool();
     for (var columnNr = 0; columnNr < columnLength; columnNr++) {
       cells[(rowNr, columnNr)] =
-          cells[(rowNr, columnNr)]!.copyWith(variant: CellVariant.stairs);
+          cells[(rowNr, columnNr)]!.copyWith(variant: CellVariant.linkedStairs);
       rowNr = goingUp ? rowNr - 1 : rowNr + 1;
       goingUp = rowNr == lastRowNr
           ? true
@@ -192,8 +192,9 @@ class PurpleScore extends SubScoreCalculation {
   @override
   SubScoreResult calculateScore(Game game) {
     var allCells = game.variant.rows.expand((row) => row);
-    var cellsOfColor =
-        allCells.where((cell) => cell.variant == CellVariant.stairs).toList();
+    var cellsOfColor = allCells
+        .where((cell) => cell.variant == CellVariant.linkedStairs)
+        .toList();
     var cellStates = game.cellStates.entries
         .where((entry) => cellsOfColor.contains(entry.key))
         .expand((entry) => entry.value.values);

@@ -42,7 +42,7 @@ enum CellVariant {
   /// * [ConnectedVariantA]
   /// * https://www.qwixx.nl/varianten/qwixx-connected/
   /// * https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCWEkfvZGisW9eFdRp7zxANZdbeg-J1fkk-A&s
-  stairs(NumbersPerCell.one, hasPurpleCircle: true),
+  linkedStairs(NumbersPerCell.one, hasPurpleCircle: true),
 
   /// See:
   /// * [ConnectedVariantB]

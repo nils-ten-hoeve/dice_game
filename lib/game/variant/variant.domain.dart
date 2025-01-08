@@ -72,5 +72,6 @@ class GameVariants extends DelegatingList<GameVariant> {
           ConnectedVariantA(),
           ConnectedVariantB(),
           DoubleVariantA(),
+          DoubleVariantB(),
         ]);
 }
