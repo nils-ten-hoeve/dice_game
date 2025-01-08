@@ -11,7 +11,7 @@ class GameService extends ChangeNotifier {
 
   final GameVariants gameVariants = GameVariants();
 
-  late Game _currentGame = Game(variant: gameVariants.basicVariantA);
+  late Game _currentGame = Game(variant: gameVariants.first);
 
   Game get currentGame => _currentGame;
 

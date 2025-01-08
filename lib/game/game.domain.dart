@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:dice_game/game/cell/cell.domain.dart';
 import 'package:dice_game/game/change/change_stack.domain.dart';
 import 'package:dice_game/game/dice/dice.domain.dart';
+import 'package:dice_game/game/score/score.domain.dart';
 import 'package:dice_game/game/variant/variant.domain.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +13,12 @@ class Game extends ChangeNotifier {
   final GameVariant variant;
   Game({required this.variant});
 
-  late Map<Cell, CellState> cellStates = {
-    for (var cell in variant.rows.expand((row) => row)) cell: CellState.none
+  late Map<Cell, CellStates> cellStates = {
+    for (var cell in variant.rows.expand((row) => row))
+      cell: {
+        for (var numberIdentifier in cell.variant.numbersPerCell.identifiers)
+          numberIdentifier: CellState.none
+      }
   };
 
   late List<RowState> rowStates = [
@@ -30,19 +35,6 @@ class Game extends ChangeNotifier {
 
   bool get twoRowsClosed =>
       rowStates.whereNot((RowState e) => e == RowState.none).length >= 2;
-
-  int markedCount(CellColor cellColor) =>
-      _markedCellCount(cellColor) + _markedLockCount(cellColor);
-
-  int _markedCellCount(CellColor cellColor) => cellStates.entries
-      .where((MapEntry e) =>
-          e.key.color == cellColor && e.value == CellState.marked)
-      .length;
-
-  int _markedLockCount(CellColor cellColor) {
-    var rowLockIndex = rowLockColors.indexOf(cellColor);
-    return rowStates[rowLockIndex] == RowState.lockedByMe ? 1 : 0;
-  }
 
   Panalty penalty = Panalty.none;
 
@@ -75,14 +67,11 @@ class Game extends ChangeNotifier {
   }
 
   void markOrUnMarkCell(Cell cell) {
-    var multipleChanges = variant.createChangesToMarkCell(this, cell);
-    if (multipleChanges.changes.isNotEmpty) {
-      changes.add(multipleChanges);
-    }
+    changes.addGroup(variant.createChangesToMarkCell(this, cell));
   }
 
   void lockRowByOtherPlayer(int rowIndex) {
-    changes.add(LockRowByOtherPlayer(this, rowIndex));
+    changes.addGroup(LockRowByOtherPlayerChanges(this, rowIndex));
   }
 
   void addPenalty() {
@@ -97,11 +86,13 @@ class Game extends ChangeNotifier {
     changes.redo();
   }
 
-  bool canLock(CellColor color) =>
-      markedCount(color) >= variant.nrOfMarkedCellsNeededToLock;
-
   bool isClosed(CellColor color) =>
       rowStates[rowLockColors.indexOf(color)] != RowState.none;
+
+  bool canLock(CellColor color) {
+    var markedCells = ColorScore(color).calculateScore(this).count;
+    return markedCells >= variant.nrOfMarkedCellsNeededToLock;
+  }
 }
 
 enum CellState {

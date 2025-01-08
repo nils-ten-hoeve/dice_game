@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:dice_game/game/color/color.domain.dart';
+import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
 
 enum CellColor {
@@ -21,26 +22,65 @@ enum CellColor {
   Color get light => lightenColor(dark, 0.4);
 }
 
+enum CellStateIdentifier {
+  singleNumber,
+  topNumber,
+  bottomNumber,
+}
+
+typedef CellStates = Map<CellStateIdentifier, CellState>;
+
 enum CellVariant {
   /// [normal] is used in:
   /// * [BasicVariantA]
   /// * [BasicVariantB]
   /// * [MixedVariantA]
   /// * [MixedVariantB]
-  normal,
+  normal(NumbersPerCell.one),
 
   /// See:
   /// * [ConnectedVariantA]
   /// * https://www.qwixx.nl/varianten/qwixx-connected/
   /// * https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTCWEkfvZGisW9eFdRp7zxANZdbeg-J1fkk-A&s
-  stairs,
+  stairs(NumbersPerCell.one, hasPurpleCircle: true),
 
   /// See:
   /// * [ConnectedVariantB]
   /// * https://www.qwixx.nl/varianten/qwixx-connected/
   /// * https://freundderwuerfel.weebly.com/uploads/1/3/0/8/130835601/published/qwixx-connected.jpg?1590921087
-  linkedWithCellBelow,
-  linkedWithCellAbove,
+  linkedWithCellBelow(NumbersPerCell.one, hasPurpleCircle: true),
+  linkedWithCellAbove(NumbersPerCell.one, hasPurpleCircle: true),
+
+  /// See:
+  /// * [DoubleVariantA]
+  /// * https://www.qwixx.nl/varianten/qwixx-dubbel/
+  /// * https://usercontent.one/wp/www.brettspielabend.net/wp-content/uploads/2022/06/20220612_155936-scaled.jpg?media=1728493186
+  doubleNumberMarkedOneByOne(NumbersPerCell.two),
+
+  /// See:
+  /// * [DoubleVariantB]
+  /// * https://www.qwixx.nl/varianten/qwixx-dubbel/
+  /// * https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiZSRQn6sw2fRwtgcRx0cVTeiBrEuBRvy8BY2kmbqQ9LlyTMWXkRB7eut6P2NgO6UFsMI&usqp=CAU
+  doubleNumberMarkedTogether(NumbersPerCell.two),
+  ;
+
+  final bool hasPurpleCircle;
+
+  final NumbersPerCell numbersPerCell;
+
+  const CellVariant(this.numbersPerCell, {this.hasPurpleCircle = false});
+}
+
+enum NumbersPerCell {
+  one([CellStateIdentifier.singleNumber]),
+  two([
+    CellStateIdentifier.topNumber,
+    CellStateIdentifier.bottomNumber,
+  ]),
+  ;
+
+  final List<CellStateIdentifier> identifiers;
+  const NumbersPerCell(this.identifiers);
 }
 
 class Cell {

@@ -87,14 +87,30 @@ class CellWidget extends StatelessWidget {
         width: cellSize,
         height: cellSize,
         decoration: BoxDecoration(
-            color: game != null && game!.cellStates[cell] != CellState.none
-                ? cell.color.middle
-                : cell.color.light,
+            color: hasDarkBackground() ? cell.color.middle : cell.color.light,
             borderRadius: BorderRadius.all(Radius.circular(borderRadius))),
         child: Stack(children: [
-          CellNumberWidget(cell),
-          CellVariantWidget(cell.variant),
-          if (game != null) CellStateWidget(game!.cellStates[cell]!),
+          if (cell.variant.hasPurpleCircle) PurpleCircle(),
+          if (cell.variant.numbersPerCell == NumbersPerCell.one)
+            Positioned.fill(
+                child: CellNumberAndState(
+                    game, cell, CellStateIdentifier.singleNumber)),
+          if (cell.variant.numbersPerCell == NumbersPerCell.two)
+            Positioned(
+                left: 0,
+                top: 0,
+                width: constraints.maxWidth * 0.55,
+                height: constraints.maxWidth * 0.55,
+                child: CellNumberAndState(
+                    game, cell, CellStateIdentifier.topNumber)),
+          if (cell.variant.numbersPerCell == NumbersPerCell.two)
+            Positioned(
+                right: 0,
+                bottom: 0,
+                width: constraints.maxWidth * 0.55,
+                height: constraints.maxWidth * 0.55,
+                child: CellNumberAndState(
+                    game, cell, CellStateIdentifier.bottomNumber)),
         ]),
       );
       if (game != null) {
@@ -109,6 +125,25 @@ class CellWidget extends StatelessWidget {
       }
     });
   }
+
+  bool hasDarkBackground() =>
+      game != null &&
+      game!.cellStates[cell]!.values.any((state) => state != CellState.none);
+}
+
+class CellNumberAndState extends StatelessWidget {
+  final Game? game;
+  final Cell cell;
+  final CellStateIdentifier numberIdentifier;
+  const CellNumberAndState(this.game, this.cell, this.numberIdentifier,
+      {super.key});
+
+  @override
+  Widget build(BuildContext context) => Stack(children: [
+        CellNumberWidget(cell),
+        if (game != null)
+          CellStateWidget(game!.cellStates[cell]![numberIdentifier]!),
+      ]);
 }
 
 class CellNumberWidget extends StatelessWidget {
@@ -135,34 +170,22 @@ class CellNumberWidget extends StatelessWidget {
       );
 }
 
-class CellVariantWidget extends StatelessWidget {
-  final CellVariant variant;
-
-  const CellVariantWidget(
-    this.variant, {
+class PurpleCircle extends StatelessWidget {
+  const PurpleCircle({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    switch (variant) {
-      case CellVariant.stairs:
-      case CellVariant.linkedWithCellAbove:
-      case CellVariant.linkedWithCellBelow:
-        return Positioned.fill(
-            child: Transform.scale(
-                scale: 0.9,
-                child: Container(
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                          color: Colors.purple,
-                          width: MediaQuery.of(context).size.width * 0.005)),
-                )));
-      default:
-        return SizedBox();
-    }
-  }
+  Widget build(BuildContext context) => Positioned.fill(
+      child: Transform.scale(
+          scale: 0.9,
+          child: Container(
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                    color: Colors.purple,
+                    width: MediaQuery.of(context).size.width * 0.005)),
+          )));
 }
 
 class CellStateWidget extends StatelessWidget {

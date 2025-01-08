@@ -1,6 +1,5 @@
 import 'package:dice_game/game/cell/cell.presentation.dart';
 import 'package:dice_game/game/score/score.presentation.dart';
-import 'package:dice_game/game/variant/variant.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:dice_game/game/game.service.dart';
 import 'package:flutter/material.dart';
@@ -219,7 +218,7 @@ void showNewGameDialog(BuildContext context) {
       context: context,
       builder: (context) =>
           SimpleDialog(title: Text('Kies een nieuw spel'), children: [
-            for (var variant in GameVariants().all)
+            for (var variant in GameService().gameVariants)
               SimpleDialogOption(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.3,

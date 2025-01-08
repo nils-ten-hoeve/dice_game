@@ -4,13 +4,18 @@ import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
 
 class SubScoreResult implements WithDutchMessage {
+  final int count;
   final int points;
   final Color? color;
   @override
   final String dutchMessage;
 
-  SubScoreResult(
-      {required this.points, required this.dutchMessage, this.color});
+  SubScoreResult({
+    required this.count,
+    required this.points,
+    required this.dutchMessage,
+    this.color,
+  });
 }
 
 abstract class SubScoreCalculation {
@@ -28,15 +33,26 @@ class ColorScore extends SubScoreCalculation {
     var cellsOfColor = allCells.where((cell) => cell.color == color).toList();
     var cellStates = game.cellStates.entries
         .where((entry) => cellsOfColor.contains(entry.key))
+        .expand((entry) => entry.value.values)
         .toList();
     var markedCells =
-        cellStates.where((entry) => entry.value == CellState.marked).toList();
+        cellStates.where((cellState) => cellState == CellState.marked).toList();
     var count = markedCells.length;
+
+    var lockRowIndex = game.rowLockColors.indexOf(color);
+    if (game.rowStates[lockRowIndex] == RowState.lockedByMe) {
+      count++;
+    }
+
     var points = scoreConversion.countToPoints(count);
     var dutchMessage =
         '$count keer ${color.dutchName} is $points punten.\n$scoreConversion';
     return SubScoreResult(
-        points: points, dutchMessage: dutchMessage, color: color.dark);
+      count: count,
+      points: points,
+      dutchMessage: dutchMessage,
+      color: color.dark,
+    );
   }
 }
 
@@ -47,7 +63,11 @@ class PenaltyScore extends SubScoreCalculation {
     var points = count * -5;
     var dutchMessage =
         '${count == 1 ? '1 misworp' : '$count misworpen'} is $points punten.';
-    return SubScoreResult(points: points, dutchMessage: dutchMessage);
+    return SubScoreResult(
+      count: count,
+      points: points,
+      dutchMessage: dutchMessage,
+    );
   }
 }
 
@@ -93,7 +113,11 @@ class ScoreConversion extends DelegatingMap<int, int> {
           9: 45,
           10: 55,
           11: 66,
-          12: 78
+          12: 78,
+          13: 91,
+          14: 105,
+          15: 120,
+          16: 136,
         });
 
   int countToPoints(int count) => this[count]!;
