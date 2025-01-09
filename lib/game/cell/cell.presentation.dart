@@ -179,12 +179,14 @@ class PurpleCircle extends StatelessWidget {
   Widget build(BuildContext context) => Positioned.fill(
       child: Transform.scale(
           scale: 0.9,
-          child: Container(
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                    color: Colors.purple,
-                    width: MediaQuery.of(context).size.width * 0.005)),
+          child: LayoutBuilder(
+            builder: (context, constraints) => Container(
+                decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.purple,
+                      width: constraints.maxWidth * 0.06,
+                    ))),
           )));
 }
 
