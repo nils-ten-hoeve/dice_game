@@ -47,7 +47,7 @@ class GameChangeStack extends ChangeStack {
 }
 
 class ChangeCellState extends Change<CellState> {
-  ChangeCellState(Game game, Cell cell, CellStateIdentifier numberIdentifier,
+  ChangeCellState(Game game, Cell cell, NumberIdentifier numberIdentifier,
       CellState newState)
       : super(
           game.cellStates[cell]![numberIdentifier]!,
@@ -81,14 +81,14 @@ class LockRowByOtherPlayerChanges extends UnmodifiableListView<Change> {
     var changes = <Change>[];
     var row = game.variant.rows[rowIndex];
     for (var cell in row.reversed) {
-      for (var cellStateIdentifier
+      for (var numberIdentifier
           in cell.variant.numbersPerCell.identifiers.reversed) {
-        if (game.cellStates[cell]![cellStateIdentifier] == CellState.marked) {
+        if (game.cellStates[cell]![numberIdentifier] == CellState.marked) {
           return changes;
         }
-        if (game.cellStates[cell]![cellStateIdentifier] == CellState.none) {
-          changes.add(ChangeCellState(
-              game, cell, cellStateIdentifier, CellState.skipped));
+        if (game.cellStates[cell]![numberIdentifier] == CellState.none) {
+          changes.add(
+              ChangeCellState(game, cell, numberIdentifier, CellState.skipped));
         }
       }
     }
@@ -133,7 +133,7 @@ class MarkCellChanges extends UnmodifiableListView<Change> {
     changes.add(ChangeCellState(
       game,
       cell,
-      CellStateIdentifier.singleNumber,
+      NumberIdentifier.singleNumber,
       CellState.marked,
     ));
     if (canLockRow(game, cell)) {
@@ -151,12 +151,12 @@ class MarkCellChanges extends UnmodifiableListView<Change> {
     var changes = <Change>[];
     var preceidingCells = game.variant.preceidingCells(cell);
     for (var preceidingCell in preceidingCells) {
-      if (game.cellStates[preceidingCell]![CellStateIdentifier.singleNumber] ==
+      if (game.cellStates[preceidingCell]![NumberIdentifier.singleNumber] ==
           CellState.none) {
         changes.add(ChangeCellState(
           game,
           preceidingCell,
-          CellStateIdentifier.singleNumber,
+          NumberIdentifier.singleNumber,
           CellState.skipped,
         ));
       }
@@ -171,5 +171,5 @@ class MarkCellChanges extends UnmodifiableListView<Change> {
       game.variant.isLastCell(cell) && !game.canLock(cell.color);
 
   static bool canNotMarkCell(CellStates currentStates) =>
-      currentStates[CellStateIdentifier.singleNumber] != CellState.none;
+      currentStates[NumberIdentifier.singleNumber] != CellState.none;
 }

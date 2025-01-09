@@ -176,7 +176,7 @@ class ConnectedVariantB extends GameVariant {
           var linkedCell =
               game.variant.rows[linkedRowIndex].elementAt(cellIndex);
           changes.add(ChangeCellState(game, linkedCell,
-              CellStateIdentifier.singleNumber, CellState.marked));
+              NumberIdentifier.singleNumber, CellState.marked));
         }
         return changes;
       },

@@ -217,7 +217,7 @@ class _MarkCellFactory {
   bool get canLockRow =>
       game.variant.isLastCell(cell) && game.canLock(cell.color);
 
-  List<CellStateIdentifier> get identifiersToMark {
+  List<NumberIdentifier> get identifiersToMark {
     var identifiers = cell.variant.numbersPerCell.identifiers;
     if (identifiers.length == 1) {
       return [identifiers.first];
@@ -226,12 +226,12 @@ class _MarkCellFactory {
       return cell.variant.numbersPerCell.identifiers;
     }
     return markTopCell
-        ? [CellStateIdentifier.topNumber]
-        : [CellStateIdentifier.bottomNumber];
+        ? [NumberIdentifier.topNumber]
+        : [NumberIdentifier.bottomNumber];
   }
 
   bool get markTopCell =>
-      game.cellStates[cell]![CellStateIdentifier.topNumber] == CellState.none;
+      game.cellStates[cell]![NumberIdentifier.topNumber] == CellState.none;
 
   bool get canNotMarkCell =>
       game.cellStates[cell]!.values.none((state) => state == CellState.none);

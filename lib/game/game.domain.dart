@@ -96,12 +96,12 @@ class Game extends ChangeNotifier {
 }
 
 enum CellState {
-  none(' '),
-  marked('X'),
-  skipped('–');
+  none(),
+  marked(Icons.close_rounded),
+  skipped(Icons.remove);
 
-  final String text;
-  const CellState(this.text);
+  final IconData? icon;
+  const CellState([this.icon]);
 }
 
 enum RowState {

@@ -22,13 +22,13 @@ enum CellColor {
   Color get light => lightenColor(dark, 0.4);
 }
 
-enum CellStateIdentifier {
+enum NumberIdentifier {
   singleNumber,
   topNumber,
   bottomNumber,
 }
 
-typedef CellStates = Map<CellStateIdentifier, CellState>;
+typedef CellStates = Map<NumberIdentifier, CellState>;
 
 enum CellVariant {
   /// [normal] is used in:
@@ -72,14 +72,14 @@ enum CellVariant {
 }
 
 enum NumbersPerCell {
-  one([CellStateIdentifier.singleNumber]),
+  one([NumberIdentifier.singleNumber]),
   two([
-    CellStateIdentifier.topNumber,
-    CellStateIdentifier.bottomNumber,
+    NumberIdentifier.topNumber,
+    NumberIdentifier.bottomNumber,
   ]),
   ;
 
-  final List<CellStateIdentifier> identifiers;
+  final List<NumberIdentifier> identifiers;
   const NumbersPerCell(this.identifiers);
 }
 

@@ -94,15 +94,15 @@ class CellWidget extends StatelessWidget {
           if (cell.variant.numbersPerCell == NumbersPerCell.one)
             Positioned.fill(
                 child: CellNumberAndState(
-                    game, cell, CellStateIdentifier.singleNumber)),
+                    game, cell, NumberIdentifier.singleNumber)),
           if (cell.variant.numbersPerCell == NumbersPerCell.two)
             Positioned(
                 left: 0,
                 top: 0,
                 width: constraints.maxWidth * 0.55,
                 height: constraints.maxWidth * 0.55,
-                child: CellNumberAndState(
-                    game, cell, CellStateIdentifier.topNumber)),
+                child:
+                    CellNumberAndState(game, cell, NumberIdentifier.topNumber)),
           if (cell.variant.numbersPerCell == NumbersPerCell.two)
             Positioned(
                 right: 0,
@@ -110,7 +110,7 @@ class CellWidget extends StatelessWidget {
                 width: constraints.maxWidth * 0.55,
                 height: constraints.maxWidth * 0.55,
                 child: CellNumberAndState(
-                    game, cell, CellStateIdentifier.bottomNumber)),
+                    game, cell, NumberIdentifier.bottomNumber)),
         ]),
       );
       if (game != null) {
@@ -134,7 +134,7 @@ class CellWidget extends StatelessWidget {
 class CellNumberAndState extends StatelessWidget {
   final Game? game;
   final Cell cell;
-  final CellStateIdentifier numberIdentifier;
+  final NumberIdentifier numberIdentifier;
   const CellNumberAndState(this.game, this.cell, this.numberIdentifier,
       {super.key});
 
@@ -197,19 +197,18 @@ class CellStateWidget extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) => Positioned.fill(
-        child: Transform.scale(
-            scale: 1.1,
-            child: FittedBox(
-                fit: BoxFit.contain,
-                child: Text(state.text,
-                    style: TextStyle(
-                      color: Theme.of(context).brightness == Brightness.dark
-                          ? Colors.black
-                          : Theme.of(context).colorScheme.onSurface,
-                      fontWeight: FontWeight.w600,
-                    )))),
-      );
+  Widget build(BuildContext context) => state.icon == null
+      ? SizedBox()
+      : SizedBox.expand(
+          child: FittedBox(
+              fit: BoxFit.fill,
+              child: Icon(
+                state.icon,
+                color: Theme.of(context).brightness == Brightness.dark
+                    ? Colors.black
+                    : Theme.of(context).colorScheme.onSurface,
+              )),
+        );
 }
 
 class LockAndState extends StatelessWidget {
