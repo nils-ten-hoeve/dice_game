@@ -15,10 +15,9 @@ class ScoreWidget extends StatelessWidget {
     var children = <Widget>[];
     for (var subScore in score.subScores) {
       if (children.isNotEmpty) {
-        children.add(Text(subScore.points < 0 ? '-' : '+',
-            style: _textStyle(onSurface)));
+        children.add(
+            Text(subScore.isPenalty ? '-' : '+', style: _textStyle(onSurface)));
       }
-      //
       children.add(InkWell(
         onTap: () {
           showMessageDialog(context, subScore.dutchMessage);

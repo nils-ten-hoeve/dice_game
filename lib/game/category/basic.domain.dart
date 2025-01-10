@@ -8,12 +8,9 @@ import 'package:dice_game/game/game.domain.dart';
 import 'package:dice_game/game/score/score.domain.dart';
 import 'package:dice_game/game/category/variant.domain.dart';
 
-const List<int> twoTroughTwelve = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-const List<int> twelveTroughTwo = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2];
-
 class BasicCategory extends Category {
   @override
-  final dutchName = "Basic";
+  final dutchName = "Basis";
 
   @override
   final dutchExplenationUrl = Uri.parse("https://www.qwixx.nl/#basisspel");
@@ -44,18 +41,10 @@ class BasicVariantA extends Variant {
       ]);
 
   static List<CellRow> createRows() => [
-        CellRow([
-          for (var number in twoTroughTwelve) Cell(CellColor.red, number),
-        ]),
-        CellRow([
-          for (var number in twoTroughTwelve) Cell(CellColor.yellow, number),
-        ]),
-        CellRow([
-          for (var number in twoTroughTwelve) Cell(CellColor.green, number),
-        ]),
-        CellRow([
-          for (var number in twoTroughTwelve) Cell(CellColor.blue, number),
-        ]),
+        CellRow.twoTroughTwelve(CellColor.red),
+        CellRow.twoTroughTwelve(CellColor.yellow),
+        CellRow.twoTroughTwelve(CellColor.green),
+        CellRow.twoTroughTwelve(CellColor.blue),
       ];
 }
 
@@ -80,18 +69,10 @@ class BasicVariantB extends Variant {
 
   static List<CellRow> createRows() {
     return [
-      CellRow([
-        for (var number in twoTroughTwelve) Cell(CellColor.red, number),
-      ]),
-      CellRow([
-        for (var number in twoTroughTwelve) Cell(CellColor.yellow, number),
-      ]),
-      CellRow([
-        for (var number in twelveTroughTwo) Cell(CellColor.green, number),
-      ]),
-      CellRow([
-        for (var number in twelveTroughTwo) Cell(CellColor.blue, number),
-      ]),
+      CellRow.twoTroughTwelve(CellColor.red),
+      CellRow.twoTroughTwelve(CellColor.yellow),
+      CellRow.twelveTroughTwo(CellColor.green),
+      CellRow.twelveTroughTwo(CellColor.blue),
     ];
   }
 }

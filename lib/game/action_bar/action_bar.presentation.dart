@@ -155,7 +155,7 @@ void showInfoDialog(BuildContext context) {
               },
             ),
             SimpleDialogOption(
-              child: Text('Regels van variant: ${game.variant.category}'),
+              child: Text('Regels van variant: ${game.variant.fullName}'),
               onPressed: () async {
                 closeDialog(context);
                 await launchUrl(game.variant.category.dutchExplenationUrl);
@@ -225,8 +225,7 @@ void showNewGameDialog(BuildContext context) {
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.3,
                   child: Column(children: [
-                    Text(
-                        '${variant.category.dutchName} variant ${variant.name}'),
+                    Text(variant.fullName),
                     for (var row in variant.rows) GameRow(cellRow: row),
                   ]),
                 ),
@@ -246,11 +245,10 @@ void showFinishedDialog(BuildContext context) {
             title: Text('Het spel is afgelopen'),
             content: SingleChildScrollView(
                 child: Column(children: [
-              Text(game.twoRowsClosed
-                  ? 'Er zijn twee rijen gesloten!'
-                  : 'U had 4 misworpen!'),
+              if (game.twoRowsClosed) Text('Er zijn twee rijen gesloten!'),
+              if (game.penalty.isMax) Text( 'U had 4 misworpen!'),
               Text('Uw score:'),
-              ScoreWidget()
+              SizedBox(width: double.infinity, child: ScoreWidget()),
             ])),
             actions: [
               ElevatedButton.icon(

@@ -30,7 +30,9 @@ abstract class Variant {
     validateIfAllUnique();
   }
 
-  late final name = '${variantLetter.name.toUpperCase()}'
+  late final fullName = '${category.dutchName} variant $variantName';
+
+  late final variantName = '${variantLetter.name.toUpperCase()}'
       '${variantNumber == null ? "" : variantNumber! + 1}';
 
   void validateIfAllUnique() {

@@ -7,6 +7,7 @@ class SubScoreResult implements WithDutchMessage {
   final int count;
   final int points;
   final Color? color;
+  final bool isPenalty;
   @override
   final String dutchMessage;
 
@@ -15,6 +16,7 @@ class SubScoreResult implements WithDutchMessage {
     required this.points,
     required this.dutchMessage,
     this.color,
+    this.isPenalty = false,
   });
 }
 
@@ -46,7 +48,7 @@ class ColorScore extends SubScoreCalculation {
 
     var points = scoreConversion.countToPoints(count);
     var dutchMessage =
-        '$count keer ${color.dutchName} is $points punten.\n$scoreConversion';
+        '$count keer ${color.dutchName} is $points punten.\n\n$scoreConversion';
     return SubScoreResult(
       count: count,
       points: points,
@@ -64,10 +66,10 @@ class PenaltyScore extends SubScoreCalculation {
     var dutchMessage =
         '${count == 1 ? '1 misworp' : '$count misworpen'} is $points punten.';
     return SubScoreResult(
-      count: count,
-      points: points,
-      dutchMessage: dutchMessage,
-    );
+        count: count,
+        points: points,
+        dutchMessage: dutchMessage,
+        isPenalty: true);
   }
 }
 

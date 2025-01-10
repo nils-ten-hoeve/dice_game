@@ -107,7 +107,7 @@ class Cell {
 
 class CellRow extends DelegatingList<Cell> {
   CellRow.twoTroughTwelve(CellColor color)
-      : super(List.generate(11, (index) => Cell(color, index + 1)));
+      : super(List.generate(11, (index) => Cell(color, index + 2)));
 
   CellRow.twelveTroughTwo(CellColor color)
       : super(List.generate(11, (index) => Cell(color, 12 - index)));
