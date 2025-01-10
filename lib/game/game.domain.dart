@@ -98,7 +98,7 @@ class Game extends ChangeNotifier {
 enum CellState {
   none(),
   marked(Icons.close_rounded),
-  skipped(Icons.remove);
+  skipped(Icons.remove_rounded);
 
   final IconData? icon;
   const CellState([this.icon]);
