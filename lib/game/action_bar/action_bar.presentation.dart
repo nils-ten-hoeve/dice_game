@@ -155,10 +155,10 @@ void showInfoDialog(BuildContext context) {
               },
             ),
             SimpleDialogOption(
-              child: Text('Regels van variant: ${game.variant.name}'),
+              child: Text('Regels van variant: ${game.variant.category}'),
               onPressed: () async {
                 closeDialog(context);
-                await launchUrl(game.variant.explenationUrl);
+                await launchUrl(game.variant.category.dutchExplenationUrl);
               },
             ),
           ]));
@@ -218,12 +218,15 @@ void showNewGameDialog(BuildContext context) {
       context: context,
       builder: (context) =>
           SimpleDialog(title: Text('Kies een nieuw spel'), children: [
-            for (var variant in GameService().gameVariants)
+            for (var variant in GameService()
+                .categories
+                .expand((category) => category.variants))
               SimpleDialogOption(
                 child: SizedBox(
                   width: MediaQuery.of(context).size.width * 0.3,
                   child: Column(children: [
-                    Text(variant.name),
+                    Text(
+                        '${variant.category.dutchName} variant ${variant.name}'),
                     for (var row in variant.rows) GameRow(cellRow: row),
                   ]),
                 ),

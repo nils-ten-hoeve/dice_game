@@ -41,13 +41,13 @@ class _GameWidgetState extends State<GameWidget> {
                 }
                 return Column(
                   children: [
-                    GameRow(game: game, cellRow: game.variant.row1),
+                    GameRow(game: game, cellRow: game.variant.rows[0]),
                     Spacer(),
-                    GameRow(game: game, cellRow: game.variant.row2),
+                    GameRow(game: game, cellRow: game.variant.rows[1]),
                     Spacer(),
-                    GameRow(game: game, cellRow: game.variant.row3),
+                    GameRow(game: game, cellRow: game.variant.rows[2]),
                     Spacer(),
-                    GameRow(game: game, cellRow: game.variant.row4),
+                    GameRow(game: game, cellRow: game.variant.rows[3]),
                     Spacer(),
                     ScoreAndActionBar(),
                     Spacer(),

@@ -1,152 +1,137 @@
 // ignore_for_file: invalid_use_of_protected_member
 // ignore_for_file: invalid_use_of_visible_for_testing_member
 
-import 'dart:math';
-
 import 'package:collection/collection.dart';
+import 'package:dice_game/game/category/category.domain.dart';
 import 'package:dice_game/game/cell/cell.domain.dart';
 import 'package:dice_game/game/change/change_stack.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:dice_game/game/score/score.domain.dart';
-import 'package:dice_game/game/variant/basic_variant.domain.dart';
-import 'package:dice_game/game/variant/variant.domain.dart';
+import 'package:dice_game/game/category/basic.domain.dart';
+import 'package:dice_game/game/category/variant.domain.dart';
 import 'package:undo/undo.dart';
 
-class DoubleVariantA extends GameVariant {
+class DoubleCategory extends Category {
+  @override
+  final dutchName = "Dubbel";
+
+  @override
+  final dutchExplenationUrl =
+      Uri.parse("https://www.qwixx.nl/varianten/qwixx-dubbel/");
+
+  @override
+  late final variants = [
+    DoubleVariantA(this),
+    for (int i = 0; i < 2; i++) DoubleVariantB(this, i),
+  ];
+}
+
+class DoubleVariantA extends Variant {
   DoubleVariantA._internal({
-    required super.name,
-    required super.explenationUrl,
-    required super.row1,
-    required super.row2,
-    required super.row3,
-    required super.row4,
+    required super.category,
+    required super.rows,
     required super.nrOfMarkedCellsNeededToLock,
     required super.createChangesToMarkCell,
     required super.scoreCalculation,
-  });
+  }) : super(variantLetter: VariantLetter.a);
 
-  factory DoubleVariantA() {
-    var baseRows = BasicVariantB().rows;
-    Map<(int rowNr, int columnNr), Cell> cells = {};
-    var columnLength = baseRows.first.length;
-    for (var rowNr = 0; rowNr < baseRows.length; rowNr++) {
-      for (var columnNr = 0; columnNr < columnLength; columnNr++) {
-        cells[(rowNr, columnNr)] = baseRows[rowNr][columnNr];
-      }
-    }
-
-    for (var rowNr = 0; rowNr < baseRows.length; rowNr++) {
-      for (var columnNr = 0; columnNr < columnLength; columnNr++) {
-        if (columnNr != columnLength - 1) {
-          cells[(rowNr, columnNr)] = cells[(rowNr, columnNr)]!
-              .copyWith(variant: CellVariant.doubleNumberMarkedOneByOne);
-        }
-      }
-    }
-
+  factory DoubleVariantA(DoubleCategory cagategory) {
     return DoubleVariantA._internal(
-      name: "Dubbel Variant A",
-      explenationUrl: Uri.parse("https://www.qwixx.nl/varianten/qwixx-dubbel/"),
-      row1: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(0, columnNr)]!,
-      ]),
-      row2: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(1, columnNr)]!
-      ]),
-      row3: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(2, columnNr)]!
-      ]),
-      row4: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(3, columnNr)]!
-      ]),
+      category: cagategory,
+      rows: _createRows(),
       nrOfMarkedCellsNeededToLock: 7,
-      createChangesToMarkCell: (Game game, Cell cell) => _MarkCellFactory(
+      createChangesToMarkCell: _createChangesToMarkCell,
+      scoreCalculation: _scoreCalculation(),
+    );
+  }
+
+  static TotalScoreCalculation _scoreCalculation() {
+    return TotalScoreCalculation([
+      for (var color in CellColor.values) ColorScore(color),
+      PenaltyScore()
+    ]);
+  }
+
+  static List<Change<dynamic>> _createChangesToMarkCell(Game game, Cell cell) =>
+      _MarkCellFactory(
         game,
         cell,
         markBothNumbers: false,
-      ).createChanges(),
-      scoreCalculation: TotalScoreCalculation([
-        for (var color in CellColor.values) ColorScore(color),
-        PenaltyScore()
-      ]),
-    );
-  }
-}
+      ).createChanges();
 
-class DoubleVariantB extends GameVariant {
-  DoubleVariantB._internal({
-    required super.name,
-    required super.explenationUrl,
-    required super.row1,
-    required super.row2,
-    required super.row3,
-    required super.row4,
-    required super.nrOfMarkedCellsNeededToLock,
-    required super.createChangesToMarkCell,
-    required super.scoreCalculation,
-  });
+  static List<CellRow> _createRows() {
+    var rows = BasicVariantB.createRows();
 
-  factory DoubleVariantB() {
-    var baseRows = BasicVariantB().rows;
-    Map<(int rowNr, int columnNr), Cell> cells = {};
-    var columnLength = baseRows.first.length;
-    for (var rowNr = 0; rowNr < baseRows.length; rowNr++) {
-      for (var columnNr = 0; columnNr < columnLength; columnNr++) {
-        cells[(rowNr, columnNr)] = baseRows[rowNr][columnNr];
-      }
-    }
-
-    final cellsToSkip1 = [0, 2, 4, 5, 6, 8, 10];
-    final cellsToSkip2 = [0, 1, 3, 5, 7, 9, 10, 11];
-    final variantB = Random().nextBool();
-    var rowsWithCellsToSkip = variantB
-        ? [cellsToSkip1, cellsToSkip1, cellsToSkip2, cellsToSkip2]
-        : [cellsToSkip2, cellsToSkip2, cellsToSkip1, cellsToSkip1];
-    for (int rowIndex = 0; rowIndex < baseRows.length; rowIndex++) {
-      var cellsToSkip = rowsWithCellsToSkip[rowIndex];
-      for (var columnIndex = 0; columnIndex < columnLength; columnIndex++) {
-        if (!cellsToSkip.contains(columnIndex)) {
-          cells[(rowIndex, columnIndex)] = cells[(rowIndex, columnIndex)]!
+    for (var rowNr = 0; rowNr < rows.length; rowNr++) {
+      for (var columnNr = 0; columnNr < CellRow.maxColumns; columnNr++) {
+        if (columnNr != CellRow.maxColumns - 1) {
+          rows[rowNr][columnNr] = rows[rowNr][columnNr]
               .copyWith(variant: CellVariant.doubleNumberMarkedOneByOne);
         }
       }
     }
+    return rows;
+  }
+}
+
+class DoubleVariantB extends Variant {
+  DoubleVariantB._internal({
+    required super.category,
+    required super.variantNumber,
+    required super.rows,
+    required super.nrOfMarkedCellsNeededToLock,
+    required super.createChangesToMarkCell,
+    required super.scoreCalculation,
+  }) : super(variantLetter: VariantLetter.b);
+
+  factory DoubleVariantB(DoubleCategory category, int variantNr) {
+    assert(variantNr >= 0 && variantNr <= 1);
 
     return DoubleVariantB._internal(
-      name: "Dubbel Variant B",
-      explenationUrl: Uri.parse("https://www.qwixx.nl/varianten/qwixx-dubbel/"),
-      row1: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(0, columnNr)]!,
-      ]),
-      row2: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(1, columnNr)]!
-      ]),
-      row3: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(2, columnNr)]!
-      ]),
-      row4: CellRow([
-        for (var columnNr = 0; columnNr < columnLength; columnNr++)
-          cells[(3, columnNr)]!
-      ]),
+      category: category,
+      variantNumber: variantNr,
+      rows: _createRows(variantNr),
       nrOfMarkedCellsNeededToLock: 7,
-      createChangesToMarkCell: (Game game, Cell cell) => _MarkCellFactory(
+      createChangesToMarkCell: _createChangesToMarkCell,
+      scoreCalculation: _scoreCalculation(),
+    );
+  }
+
+  static List<CellRow> _createRows(int variantNr) {
+    var rows = BasicVariantB.createRows();
+
+    final cellsToSkip1 = [0, 2, 4, 5, 6, 8, 10];
+    final cellsToSkip2 = [0, 1, 3, 5, 7, 9, 10, 11];
+    var rowsWithCellsToSkip = variantNr == 0
+        ? [cellsToSkip1, cellsToSkip1, cellsToSkip2, cellsToSkip2]
+        : [cellsToSkip2, cellsToSkip2, cellsToSkip1, cellsToSkip1];
+    for (int rowIndex = 0; rowIndex < rows.length; rowIndex++) {
+      var cellsToSkip = rowsWithCellsToSkip[rowIndex];
+      for (var columnIndex = 0;
+          columnIndex < CellRow.maxColumns;
+          columnIndex++) {
+        if (!cellsToSkip.contains(columnIndex)) {
+          rows[rowIndex][columnIndex] = rows[rowIndex][columnIndex]
+              .copyWith(variant: CellVariant.doubleNumberMarkedOneByOne);
+        }
+      }
+    }
+    return rows;
+  }
+
+  static TotalScoreCalculation _scoreCalculation() {
+    return TotalScoreCalculation([
+      for (var color in CellColor.values) ColorScore(color),
+      PenaltyScore()
+    ]);
+  }
+
+  static List<Change<dynamic>> _createChangesToMarkCell(Game game, Cell cell) =>
+      _MarkCellFactory(
         game,
         cell,
         markBothNumbers: true,
-      ).createChanges(),
-      scoreCalculation: TotalScoreCalculation([
-        for (var color in CellColor.values) ColorScore(color),
-        PenaltyScore()
-      ]),
-    );
-  }
+      ).createChanges();
 }
 
 class _MarkCellFactory {

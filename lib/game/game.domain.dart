@@ -6,11 +6,11 @@ import 'package:dice_game/game/cell/cell.domain.dart';
 import 'package:dice_game/game/change/change_stack.domain.dart';
 import 'package:dice_game/game/dice/dice.domain.dart';
 import 'package:dice_game/game/score/score.domain.dart';
-import 'package:dice_game/game/variant/variant.domain.dart';
+import 'package:dice_game/game/category/variant.domain.dart';
 import 'package:flutter/material.dart';
 
 class Game extends ChangeNotifier {
-  final GameVariant variant;
+  final Variant variant;
   Game({required this.variant});
 
   late Map<Cell, CellStates> cellStates = {

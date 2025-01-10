@@ -1,6 +1,7 @@
+import 'package:dice_game/game/category/category.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:flutter/material.dart';
-import 'package:dice_game/game/variant/variant.domain.dart';
+import 'package:dice_game/game/category/variant.domain.dart';
 
 class GameService extends ChangeNotifier {
   static final GameService _singleton = GameService._internal();
@@ -9,13 +10,13 @@ class GameService extends ChangeNotifier {
 
   GameService._internal();
 
-  final GameVariants gameVariants = GameVariants();
+  final Categories categories = Categories();
 
-  late Game _currentGame = Game(variant: gameVariants.first);
+  Game _currentGame = Game(variant: Categories().first.variants.first);
 
   Game get currentGame => _currentGame;
 
-  void newGame(GameVariant variant) {
+  void newGame(Variant variant) {
     _currentGame = Game(variant: variant);
     notifyListeners();
   }

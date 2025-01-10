@@ -106,13 +106,21 @@ class Cell {
 }
 
 class CellRow extends DelegatingList<Cell> {
+  CellRow.twoTroughTwelve(CellColor color)
+      : super(List.generate(11, (index) => Cell(color, index + 1)));
+
+  CellRow.twelveTroughTwo(CellColor color)
+      : super(List.generate(11, (index) => Cell(color, 12 - index)));
+
   CellRow(super.values) {
     validateNumberOfCells();
   }
 
   void validateNumberOfCells() {
-    if (length != 11) {
+    if (length != maxColumns) {
       throw Exception("Row must have 11 cells");
     }
   }
+
+  static int maxColumns = 11;
 }
