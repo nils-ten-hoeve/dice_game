@@ -1,3 +1,5 @@
+import 'package:dice_game/game/category/category.domain.dart';
+import 'package:dice_game/game/category/variant.domain.dart';
 import 'package:dice_game/game/cell/cell.presentation.dart';
 import 'package:dice_game/game/score/score.presentation.dart';
 import 'package:dice_game/game/game.domain.dart';
@@ -147,7 +149,7 @@ void showInfoDialog(BuildContext context) {
       builder: (context) =>
           SimpleDialog(title: Text('Welke spelregels wilt u zien?'), children: [
             SimpleDialogOption(
-              child: Text('Basis Regels'),
+              child: ListTile(title: Text('Basis Regels')),
               onPressed: () async {
                 closeDialog(context);
                 final Uri url = Uri.parse('https://www.qwixx.nl/');
@@ -155,7 +157,9 @@ void showInfoDialog(BuildContext context) {
               },
             ),
             SimpleDialogOption(
-              child: Text('Regels van variant: ${game.variant.fullName}'),
+              child: ListTile(
+                title: Text('Regels van variant: ${game.variant.fullName}'),
+              ),
               onPressed: () async {
                 closeDialog(context);
                 await launchUrl(game.variant.category.dutchExplenationUrl);
@@ -215,38 +219,123 @@ class _MyIconButtonState extends State<MyIconButton> {
 
 void showNewGameDialog(BuildContext context) {
   showDialog(
+      barrierDismissible: false,
       context: context,
-      builder: (context) =>
-          SimpleDialog(title: Text('Kies een nieuw spel'), children: [
-            for (var variant in GameService()
-                .categories
-                .expand((category) => category.variants))
-              SimpleDialogOption(
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width * 0.3,
-                  child: Column(children: [
-                    Text(variant.fullName),
-                    for (var row in variant.rows) GameRow(cellRow: row),
+      builder: (context) {
+        var gameService = GameService();
+        return SimpleDialog(title: Text('Een nieuw spel:'), children: [
+          if (gameService.lastPlayedVariant != null)
+            SimpleDialogOption(
+              child: ListTile(
+                  leading: Icon(FontAwesomeIcons.arrowRotateLeft),
+                  title: Text(
+                      'Opnieuw ${gameService.lastPlayedVariant!.fullName.toLowerCase()}')),
+              onPressed: () {
+                closeDialog(context);
+                GameService().newGame(gameService.lastPlayedVariant!);
+              },
+            ),
+          for (var category in GameService().categories)
+            SimpleDialogOption(
+              child: ListTile(
+                  leading: Icon(category.icon),
+                  title: Text('Categorie ${category.dutchName}')),
+              onPressed: () {
+                closeDialog(context);
+                showSelectVariantDialog(context, category);
+              },
+            ),
+        ]);
+      });
+}
+
+void showSelectVariantDialog(BuildContext context, Category category) {
+  var scrollController = ScrollController();
+  showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => AlertDialog(
+            title:
+                Text('Kies een ${category.dutchName.toLowerCase()} variant:'),
+            content: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.6,
+              child: Scrollbar(
+                controller: scrollController,
+                thumbVisibility: true,
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Row(children: [
+                    Expanded(
+                      flex: 1,
+                      child: Column(children: [
+                        for (var variant in category.variants.where((variant) =>
+                            variant.variantLetter == VariantLetter.a))
+                          SimpleDialogOption(
+                            child: Column(children: [
+                              Text(variant.fullName),
+                              for (var row in variant.rows)
+                                GameRow(cellRow: row),
+                            ]),
+                            onPressed: () {
+                              closeDialog(context);
+                              GameService().newGame(variant);
+                            },
+                          ),
+                      ]),
+                    ),
+                    Expanded(
+                      flex: 1,
+                      child: Column(children: [
+                        for (var variant in category.variants.where((variant) =>
+                            variant.variantLetter == VariantLetter.b))
+                          SimpleDialogOption(
+                            child: Column(children: [
+                              Text(variant.fullName),
+                              for (var row in variant.rows)
+                                GameRow(cellRow: row),
+                            ]),
+                            onPressed: () {
+                              closeDialog(context);
+                              GameService().newGame(variant);
+                            },
+                          ),
+                      ]),
+                    )
                   ]),
                 ),
+              ),
+            ),
+            actions: [
+              ElevatedButton.icon(
+                  label: Text('Spelregels'),
+                  icon: const Icon(FontAwesomeIcons.circleInfo),
+                  onPressed: () async {
+                    closeDialog(context);
+                    await launchUrl(category.dutchExplenationUrl);
+                  }),
+              ElevatedButton.icon(
+                label: Text('Kies een andere categorie'),
+                icon: const Icon(FontAwesomeIcons.arrowRotateLeft),
                 onPressed: () {
                   closeDialog(context);
-                  GameService().newGame(variant);
+                  showNewGameDialog(context);
                 },
               ),
-          ]));
+            ],
+          ));
 }
 
 void showFinishedDialog(BuildContext context) {
   var game = GameService().currentGame;
   showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (context) => AlertDialog(
             title: Text('Het spel is afgelopen'),
             content: SingleChildScrollView(
                 child: Column(children: [
               if (game.twoRowsClosed) Text('Er zijn twee rijen gesloten!'),
-              if (game.penalty.isMax) Text( 'U had 4 misworpen!'),
+              if (game.penalty.isMax) Text('U had 4 misworpen!'),
               Text('Uw score:'),
               SizedBox(width: double.infinity, child: ScoreWidget()),
             ])),

@@ -7,10 +7,14 @@ import 'package:dice_game/game/change/change_stack.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:dice_game/game/score/score.domain.dart';
 import 'package:dice_game/game/category/variant.domain.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class MixedCategory extends Category {
   @override
   final dutchName = "Gemixt";
+
+  @override
+  final icon = FontAwesomeIcons.blender;
 
   @override
   final dutchExplenationUrl =

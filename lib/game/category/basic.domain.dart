@@ -7,10 +7,14 @@ import 'package:dice_game/game/category/category.domain.dart';
 import 'package:dice_game/game/game.domain.dart';
 import 'package:dice_game/game/score/score.domain.dart';
 import 'package:dice_game/game/category/variant.domain.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BasicCategory extends Category {
   @override
   final dutchName = "Basis";
+
+  @override
+  final icon = FontAwesomeIcons.diceOne;
 
   @override
   final dutchExplenationUrl = Uri.parse("https://www.qwixx.nl/#basisspel");

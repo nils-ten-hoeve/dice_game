@@ -9,11 +9,15 @@ import 'package:dice_game/game/score/score.domain.dart';
 import 'package:dice_game/game/category/basic.domain.dart';
 import 'package:dice_game/game/category/variant.domain.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:undo/undo.dart';
 
 class ConnectedCategory extends Category {
   @override
   final dutchName = "Verbonden";
+
+  @override
+  final icon = FontAwesomeIcons.link;
 
   @override
   final dutchExplenationUrl =

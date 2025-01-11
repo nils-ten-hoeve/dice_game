@@ -14,10 +14,13 @@ class GameService extends ChangeNotifier {
 
   Game _currentGame = Game(variant: Categories().first.variants.first);
 
+  Variant? lastPlayedVariant;
+
   Game get currentGame => _currentGame;
 
   void newGame(Variant variant) {
     _currentGame = Game(variant: variant);
+    lastPlayedVariant = variant;
     notifyListeners();
   }
 }
